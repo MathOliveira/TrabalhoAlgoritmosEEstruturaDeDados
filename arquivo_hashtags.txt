@@ -1,0 +1,22 @@
+calor         
+cerrado       
+desmatamento  
+INPE          
+prayforamazoni
+Amazônia     
+SOS           
+Ciência      
+Bolsonaro     
+Pantanal      4,51,97,144,191,238,285,332,379,426,473,520,567,614,662,710
+MeioAmbiente  
+calor         
+cerrado       
+desmatamento  
+INPE          
+prayforamazoni
+Amazônia     
+SOS           
+Ciência      
+Bolsonaro     
+Pantanal      51,97,144,191,238,285,332,379,426,473,520,567,614,662,710
+MeioAmbiente  

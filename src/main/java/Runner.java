@@ -1,6 +1,7 @@
 import br.ucs.trabalho.config.Configuracao;
 import br.ucs.trabalho.modelo.Arquivo;
 import br.ucs.trabalho.modelo.ArquivoIndice;
+import br.ucs.trabalho.util.ConverteArquivo;
 import twitter4j.*;
 
 import java.io.*;
@@ -11,6 +12,7 @@ public class Runner {
 	private static List<Status> tweets = new ArrayList<Status>();
 	private static List<Status> tweetsInseridos = new ArrayList<Status>();
 	private static int ultimoIndice = 0;
+	private RandomAccessFile arquivo;
 	// Listas arquivos
 	private static List<Arquivo> arquivoDadosList = new ArrayList<Arquivo>();
 	private static List<ArquivoIndice> arquivoIndiceList = new ArrayList<ArquivoIndice>();
@@ -27,6 +29,8 @@ public class Runner {
 			System.out.println("***************************");
 			System.out.println("Digite uma opcao:");
 			System.out.println("1 Coletar dados");
+			System.out.println("2 Converter dados");
+			System.out.println("3 Busca de tweet por Twitter_id");
 			System.out.println("9 Buscar hashtag mais usada");
 			System.out.println("0 Para sair");
 			opcao = scan2.nextInt();
@@ -39,6 +43,21 @@ public class Runner {
 					} catch (Exception xx) {
 						xx.printStackTrace();
 					}
+					break;
+				case 2:
+					System.out.println("Iniciando 'Converter dados'");
+					ConverteArquivo convert = new ConverteArquivo();
+					convert.serial();
+					break;
+				case 3:
+					System.out.println("Iniciando 'Busca de tweet por Twitter_id'");
+					System.out.println("Digite o indice que deseja:");
+					scan2.nextLine();
+					String tw_id = scan2.nextLine();
+					Long twid = Long.parseLong(tw_id);
+					System.out.println(twid);
+					int idx1 = buscaBinaria(twid);
+					buscaPorId(idx1);
 					break;
 				case 9:
 					System.out.println("Iniciando 'Buscar hashtag mais usada'");
@@ -58,7 +77,7 @@ public class Runner {
 		Twitter twitter = config.ObterConfiguracao();
 		try {
 			criarArquivoHashtags();
-			while (ultimoIndice < 10) { //10.000
+			while (ultimoIndice < 10000) { //10.000
 					buscarTweets(twitter);
 					inserirArquivoDeDados();
 					inserirArquivoIndice();
@@ -125,7 +144,7 @@ public class Runner {
 			if (ultimo.equals(String.valueOf('0'))) {
 
 			} else {
-				ultimo = ultimo.substring(0, 19);
+				ultimo = ultimo.substring(0, 15);
 			}
 
 			buffer.close();
@@ -301,6 +320,81 @@ public class Runner {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void Arquivo_Java() {
+		try {
+			arquivo = new RandomAccessFile("indicerandom.txt", "rw");
+		} catch (IOException e) {
+		}
+	}
+
+	public int filesize() {
+		try {
+			return (int) arquivo.length();
+		} catch (IOException e) {
+
+		}
+		return 0;
+	}
+
+	private long buscaRegistro(long me) {
+		try {
+			String fatia = null;
+			arquivo.seek(me);
+			String leitura = arquivo.readLine();
+			fatia = leitura.substring(6, 25);
+			fatia = fatia.trim();
+			return Long.parseLong(fatia);
+		} catch (IOException x) {
+			x.printStackTrace();
+		}
+		return 0;
+	}
+
+	public int buscaBinaria(long chave) {
+		Arquivo_Java();
+		long pIni = 0, pFim = filesize(), pMeio = pFim / 2;
+		//System.out.println("ini =" + pIni + " pFim =" + pFim + " pMeio =" + pMeio+"\n");
+		try {
+		} catch (Exception err) {
+			err.printStackTrace();
+		}
+		while (pIni < pFim && chave != buscaRegistro(pMeio)) {
+
+			if (chave < buscaRegistro(pMeio)) {
+				pFim = pMeio;
+				pMeio = (pMeio / 590) / 2;
+				pMeio = pMeio * 590 + pMeio;
+
+			} else {
+				pIni = pMeio;
+				if (pIni + pFim < filesize() && pIni + pFim < 2*pMeio) {
+					pMeio = (pIni + pFim) / 590;
+					pMeio = pMeio * 590 + pMeio;
+				} else {
+					pMeio = (pIni + pFim) / 2 / 591;
+					pMeio = pMeio * 590 + pMeio;
+				}
+			}
+//			if(pMeio > pFim) {
+//				pMeio = pFim -590;
+//			}
+			//	System.out.println("novo inicio = "+ pIni + " novo meio = " + pMeio + " novo fim = " + pFim );
+		}
+		Long indice = pMeio / 591;
+		return Integer.valueOf(indice.toString())+1;
+	}
+
+	public void buscaPorId(int id) {
+		RandomAccessFile registroleitura;
+		try {
+			registroleitura = new RandomAccessFile("testexxx.txt", "rw");
+			registroleitura.seek((id-1) * 591);
+			String leitura = registroleitura.readLine();
+			System.out.println(leitura);
+		} catch (IOException e) {
+		}
 	}
 
 }
