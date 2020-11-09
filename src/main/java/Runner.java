@@ -12,6 +12,7 @@ public class Runner {
 	private static List<Status> tweets = new ArrayList<Status>();
 	private static List<Status> tweetsInseridos = new ArrayList<Status>();
 	private static int ultimoIndice = 0;
+	private static int linesize = 543;
 	private RandomAccessFile arquivo;
 	// Listas arquivos
 	private static List<Arquivo> arquivoDadosList = new ArrayList<Arquivo>();
@@ -31,7 +32,7 @@ public class Runner {
 			System.out.println("1 Coletar dados");
 			System.out.println("2 Converter dados");
 			System.out.println("3 Buscar de tweet por Twitter_id");
-			System.out.println("5 Buscar tweets por hashtag");
+			System.out.println("5 Buscar de tweets por Hashtag");
 			System.out.println("9 Buscar hashtag mais usada");
 			System.out.println("0 Sair");
 			opcao = scan2.nextInt();
@@ -48,7 +49,7 @@ public class Runner {
 				case 2:
 					System.out.println("Iniciando 'Converter dados'");
 					ConverteArquivo convert = new ConverteArquivo();
-					convert.serial();
+					convert.serial(linesize);
 					break;
 				case 3:
 					System.out.println("Iniciando 'Busca de tweet por Twitter_id'");
@@ -341,13 +342,6 @@ public class Runner {
 
 	}
 
-	public void Arquivo_Java() {
-		try {
-			arquivo = new RandomAccessFile("indicerandom.txt", "rw");
-		} catch (IOException e) {
-		}
-	}
-
 	public int filesize() {
 		try {
 			return (int) arquivo.length();
@@ -371,6 +365,13 @@ public class Runner {
 		return 0;
 	}
 
+	public void Arquivo_Java() {
+		try {
+			arquivo = new RandomAccessFile("indicerandom.txt", "rw");
+		} catch (IOException e) {
+		}
+	}
+
 	public int buscaBinaria(long chave) {
 		Arquivo_Java();
 		long pIni = 0, pFim = filesize(), pMeio = pFim / 2;
@@ -383,21 +384,21 @@ public class Runner {
 
 			if (chave < buscaRegistro(pMeio)) {
 				pFim = pMeio;
-				pMeio = (pMeio / 590) / 2;
-				pMeio = pMeio * 590 + pMeio;
+				pMeio = (pMeio / linesize) / 2;
+				pMeio = pMeio * linesize + pMeio;
 
 			} else {
 				pIni = pMeio;
 				if (pIni + pFim < filesize() && pIni + pFim < 2*pMeio) {
-					pMeio = (pIni + pFim) / 590;
-					pMeio = pMeio * 590 + pMeio;
+					pMeio = (pIni + pFim) / linesize;
+					pMeio = pMeio * linesize + pMeio;
 				} else {
-					pMeio = (pIni + pFim) / 2 / 591;
-					pMeio = pMeio * 590 + pMeio;
+					pMeio = (pIni + pFim) / 2 / linesize+1;
+					pMeio = pMeio * linesize + pMeio;
 				}
 			}
 		}
-		Long indice = pMeio / 591;
+		Long indice = pMeio / linesize +1;
 		return Integer.valueOf(indice.toString())+1;
 	}
 

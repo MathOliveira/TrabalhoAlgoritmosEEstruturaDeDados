@@ -4,7 +4,7 @@ import java.io.*;
 
 public class ConverteArquivo {
 
-	public void serial() {
+	public void serial(int linesize) {
 		StringBuffer sb;
 		try {
 			RandomAccessFile file = new RandomAccessFile(new File("indicerandom.txt"), "rw");
@@ -16,7 +16,7 @@ public class ConverteArquivo {
 			do {
 				str = arq.readLine();
 				sb = new StringBuffer(str);
-				sb.setLength(590);
+				sb.setLength(linesize);
 				file.writeBytes(sb.toString());
 				file.writeBytes("\n");
 				System.out.println(ind + " " + str);
@@ -40,7 +40,7 @@ public class ConverteArquivo {
 			do {
 				str = arq.readLine();
 				sb = new StringBuffer(str);
-				sb.setLength(590);
+				sb.setLength(linesize);
 				file.writeBytes(sb.toString());
 				file.writeBytes("\n");
 				System.out.println(ind + " " + str);
@@ -53,12 +53,6 @@ public class ConverteArquivo {
 		} catch (IOException xx) {
 			xx.printStackTrace();
 		}
-
-	}
-
-	public static void main(String[] args) {
-		ConverteArquivo a = new ConverteArquivo();
-		a.serial();
 
 	}
 
