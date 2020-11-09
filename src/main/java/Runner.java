@@ -30,9 +30,10 @@ public class Runner {
 			System.out.println("Digite uma opcao:");
 			System.out.println("1 Coletar dados");
 			System.out.println("2 Converter dados");
-			System.out.println("3 Busca de tweet por Twitter_id");
+			System.out.println("3 Buscar de tweet por Twitter_id");
+			System.out.println("5 Buscar tweets por hashtag");
 			System.out.println("9 Buscar hashtag mais usada");
-			System.out.println("0 Para sair");
+			System.out.println("0 Sair");
 			opcao = scan2.nextInt();
 
 			switch (opcao) {
@@ -58,6 +59,19 @@ public class Runner {
 					System.out.println(twid);
 					int idx1 = buscaBinaria(twid);
 					buscaPorId(idx1);
+					break;
+				case 5:
+					System.out.println("Iniciando 'Busca tweets por hashtag'");
+					scan2.nextLine();
+					System.out.println("Digite a hashtag desejada");
+					String hst = scan2.nextLine();
+					System.out.println(hst);
+
+					try {
+						buscarTweetsPorHashtag(hst);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					break;
 				case 9:
 					System.out.println("Iniciando 'Buscar hashtag mais usada'");
@@ -303,8 +317,13 @@ public class Runner {
 			while (line != null) {
 				line = buffer.readLine();
 				if (line != null) {
-					String hashtag = line.substring(0,14);
-					List<String> indices = Arrays.asList(line.substring(15).split(","));
+					String hashtag = line.substring(0, 14);
+					List<String> indices = null;
+					try{
+						indices = Arrays.asList(line.substring(15).split(","));
+					}catch(Exception e){
+					}
+					if(indices!=null)
 					if(indices.size() > indicesHashtagMaisComentada) {
 						indicesHashtagMaisComentada = indices.size();
 						hashtagMaisComentada = hashtag;
@@ -377,10 +396,6 @@ public class Runner {
 					pMeio = pMeio * 590 + pMeio;
 				}
 			}
-//			if(pMeio > pFim) {
-//				pMeio = pFim -590;
-//			}
-			//	System.out.println("novo inicio = "+ pIni + " novo meio = " + pMeio + " novo fim = " + pFim );
 		}
 		Long indice = pMeio / 591;
 		return Integer.valueOf(indice.toString())+1;
@@ -395,6 +410,44 @@ public class Runner {
 			System.out.println(leitura);
 		} catch (IOException e) {
 		}
+	}
+
+	public void buscarTweetsPorHashtag(String hashtag) throws IOException {
+		InputStream file;
+		try {
+			file = new FileInputStream("arquivo_hashtags.txt");
+			InputStreamReader file_reader = new InputStreamReader(file);
+			BufferedReader buffer = new BufferedReader(file_reader);
+
+			String line = "";
+			while (line != null) {
+				line = buffer.readLine();
+				if (line != null && line.substring(0,14).trim().toUpperCase().equals(hashtag.trim().toUpperCase())) {
+					List<String> indices = Arrays.asList(line.substring(15).split(","));
+					for(String indice : indices) {
+						if (isInteger(indice)){
+							buscaPorId(Integer.parseInt(indice));
+						}
+					}
+				}
+			}
+			buffer.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static boolean isInteger(String s) {
+		try {
+			Integer.parseInt(s);
+		} catch(NumberFormatException e) {
+			return false;
+		} catch(NullPointerException e) {
+			return false;
+		}
+		// only got here if we didn't return false
+		return true;
 	}
 
 }

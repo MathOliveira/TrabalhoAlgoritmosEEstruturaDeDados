@@ -32,7 +32,7 @@ public class ConverteArquivo {
 
 		try {
 			RandomAccessFile file = new RandomAccessFile(new File("testexxx.txt"), "rw");
-			BufferedReader arq = new BufferedReader(new FileReader("teste.txt"));
+			BufferedReader arq = new BufferedReader(new FileReader("arquivo-conteudo.txt"));
 			file.seek(0);
 			String str;
 			int ind = 1;
