@@ -1,12 +1,20 @@
+package br.ucs.trabalho.util;
+
 import br.ucs.trabalho.config.Configuracao;
 import br.ucs.trabalho.modelo.Arquivo;
 import br.ucs.trabalho.modelo.ArquivoIndice;
-import br.ucs.trabalho.util.ConverteArquivo;
+import br.ucs.trabalho.repository.TweetRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import twitter4j.*;
 
 import java.io.*;
 import java.util.*;
 
+@SpringBootApplication
+@EnableMongoRepositories(basePackageClasses = TweetRepository.class)
 public class Runner {
 
 	private static List<Status> tweets = new ArrayList<Status>();
@@ -18,9 +26,29 @@ public class Runner {
 	private static List<Arquivo> arquivoDadosList = new ArrayList<Arquivo>();
 	private static List<ArquivoIndice> arquivoIndiceList = new ArrayList<ArquivoIndice>();
 
+	@Autowired
+	private TweetRepository repository;
+
 	public static void main(String[] args)  {
+		SpringApplication.run(Runner.class, args);
 		Runner app = new Runner();
-		app.menu();
+		app.test();
+		//app.menu();
+	}
+	private void test() {
+		repository.deleteAll();
+
+		// save a couple of customers
+		repository.save(new Tweet(10, "Smith","sdfsdfsdfsdfsdf",new Date(),"t1",null));
+		repository.save(new Tweet(20, "ooooo","aaaaaaaaaaaa",new Date(),"test2e",null));
+
+		// fetch all customers
+		System.out.println("Tweet found with findAll():");
+		System.out.println("-------------------------------");
+		for (Tweet tweet : repository.findAll()) {
+			System.out.println(tweet);
+		}
+		System.out.println();
 	}
 
 	private void menu() {
@@ -29,7 +57,8 @@ public class Runner {
 		do {
 			System.out.println("***************************");
 			System.out.println("Digite uma opcao:");
-			System.out.println("1 Coletar dados");
+			System.out.println("0 Coletar dados e escrita MongoDB");
+			System.out.println("1 Coletar dados e escrita local");
 			System.out.println("2 Converter dados");
 			System.out.println("3 Buscar de tweet por Twitter_id");
 			System.out.println("5 Buscar de tweets por Hashtag");
@@ -38,8 +67,16 @@ public class Runner {
 			opcao = scan2.nextInt();
 
 			switch (opcao) {
+				case 0:
+					System.out.println("Iniciando 'Coletar dados e escrita MongoDB'");
+					try {
+						fetchDados();
+					} catch (Exception xx) {
+						xx.printStackTrace();
+					}
+					break;
 				case 1:
-					System.out.println("Iniciando 'Coletar dados'");
+					System.out.println("Iniciando 'Coletar dados e escrita local'");
 					try {
 						fetchDados();
 					} catch (Exception xx) {
